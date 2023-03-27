@@ -1,0 +1,27 @@
+{
+  "name": "instagram",
+  "version": "1.0.0",
+  "description": "Photos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "node dist/main"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "formidable": "^2.1.1",
+    "http": "0.0.1-security",
+    "path": "^0.12.7",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.2",
+    "webpack": "^5.76.3",
+    "webpack-cli": "^5.0.1",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/formidable": "^2.0.5",
+    "@types/node": "^18.15.10"
+  }
+}

@@ -36,7 +36,6 @@ Content-Type: image/png
 
 ------FormBoundary1234
 Content-Disposition: form-data; name="album"
-Content-Type: text/plain
 
-nazwa_albumu
+plusy
 ------FormBoundary1234

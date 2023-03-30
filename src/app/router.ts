@@ -1,5 +1,6 @@
 import * as formidable from "formidable";
 import { IncomingMessage, ServerResponse } from "http";
+import FileController from "./fileController";
 
 export default async function router(
   req: IncomingMessage,
@@ -22,8 +23,7 @@ export default async function router(
       break;
     case "POST":
       if (req.url == "/api/photos") {
-        const form = formidable({ multiples: true, uploadDir: "./test" });
-        console.log(req);
+        const form = formidable({ multiples: true, uploadDir: "./temp" });
         form.parse(req, (err, fields, files) => {
           if (err) {
             res.statusCode = err.httpCode || 404;
@@ -31,8 +31,8 @@ export default async function router(
             res.end();
             return;
           }
-          console.log(fields);
-          console.log(files);
+
+          FileController.uploadPhoto((files.file as unknown as formidable.File).newFilename, (fields as unknown as{album: String}).album)
           res.statusCode = 200;
           res.setHeader("content-type", "application/json");
           res.end(JSON.stringify({ ok: "ok" }));
@@ -40,7 +40,7 @@ export default async function router(
       }
       break;
     case "DELETE":
-      if (req.url.match(/api\/photos\/[0-9]*/)) {
+      if (req.url.match(/api\/photos\/[0-9a-zA-Z]*/)) {
         res.statusCode = 200;
         res.setHeader("content-type", "application/json");
 

@@ -1,9 +1,15 @@
 import { createServer } from "http";
 const PORT = 3000;
-import router from "./app/router";
+import imageRouter from "./app/imageRouter";
+import tagRouter from "./app/tagsRouter";
 
 const server = createServer((req, res) => {
-  router(req, res);
+
+  if(req.url.match(/tags/))
+    tagRouter(req, res);
+  else if(req.url.match(/\/api\/photos/))
+    imageRouter(req, res);
+
 });
 
 server.listen(PORT, () => {

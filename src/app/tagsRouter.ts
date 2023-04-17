@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { url } from "inspector";
 import { getPostData } from "./getRequestData";
-import { tagsList } from "./model";
+import { photoList, tagsList, UpdatePhotoTagsData } from "./model";
 import { addTag } from "./tagsController";
 
 export default async function tagRouter(
@@ -11,6 +11,7 @@ export default async function tagRouter(
   switch (req.method) {
     case "GET":
       const [path, args] = req.url.split("?");
+      console.log(path)
       if (path.match(/raw/)) {
         res.statusCode = 200;
         res.statusMessage = "ok";
@@ -27,8 +28,10 @@ export default async function tagRouter(
         res.setHeader("content-type", "application/json");
         res.write(JSON.stringify(tagsList));
         res.end();
-      } else if (path.match(/tag\/[0-9]*/)) {
+      } else if (path.match(/tags\/[0-9]*/)) {
+        
         const id = path.split(/\/tags\//)[1] as unknown as number;
+        
         const tag = tagsList.find((tag) => tag.id == id);
 
         res.statusCode = 200;
@@ -40,24 +43,99 @@ export default async function tagRouter(
       break;
 
     case "POST":
-      if (path.match(/^\/api\/tags$/)) {
+      if (req.url.match(/^\/api\/tags$/)) {
         getPostData(req).then((body) => {
-          const params = new URLSearchParams(body as string);
-          const obj = Object.fromEntries(params) as unknown as {
-            name: string,
-            popularity?: number
-          };
-          addTag(...obj)
+          const obj = JSON.parse(body) as {name: string, popularity?: number}
+          obj.name = obj.name.replace(/\#/g, "")
+
+          console.log(obj)
+
+          const ok = addTag(obj.name, obj.popularity)
+          if(ok){
+            res.statusCode = 200
+            res.statusMessage = "ok"
+            res.end()
+          }
+          else{
+            res.statusCode = 400
+            res.statusMessage = "this tag probably already exists"
+            res.end()
+          }
         });
       }
       break;
 
     case "PATCH":
-        if(req.url.match(/api\/photos\/tags/))
+        if(req.url.match(/api\/photos\/tags$/))
         {
             const body:string = await getPostData(req) as string;
-            const params = new URLSearchParams(body)
+            const obj = JSON.parse(body) as UpdatePhotoTagsData
+            obj.tagName = (obj.tagName as string).replace(/\#/g, "")
+            const photo = photoList.find(photo => photo.id == obj.photoId)
+            if(!photo.tagList.includes(obj.tagName as string))
+            {
+              if(tagsList.find(tag => 
+                tag.name.includes(obj.tagName as string)
+              ) === undefined)
+              {
+                console.log(obj.tagName)
+                res.statusCode = 400
+                res.statusMessage = "this tag does not exists"
+                res.end()
+              }
+              else {
+                photo.tagList.push(obj.tagName as string)
+              res.statusCode = 200
+              res.statusMessage = "ok"
+              res.end()
+              }
+              
+            }
+            else
+            {
+              res.statusCode = 400
+              res.statusMessage = "photo already has this tag"
+              res.end()
+            }            
+        }
+        else if(req.url.match(/api\/photos\/tags$\/mass/))
+        {
+          const body:string = await getPostData(req) as string;
+          const obj = JSON.parse(body) as UpdatePhotoTagsData
+          const photo = photoList.find(photo => photo.id == obj.photoId)
+          
+          obj.tagName = (obj.tagName as string[]).map(name => name.replace(/\#/g, ""))
 
+          const nonExistent:string[] = []
+
+          res.statusCode = 200
+          res.statusMessage = "ok"
+
+          obj.tagName.forEach(name => {
+            if(!photo.tagList.includes(name))
+            {
+              if(tagsList.find(tag => 
+                tag.name.includes(name)
+              ) === undefined)
+              {
+                nonExistent.push(name)
+              }
+              else {
+                photo.tagList.push(obj.tagName as string)
+              }
+              
+            }
+            else
+            {
+              nonExistent.push(name)
+            }    
+          })
+        if(nonExistent.length != 0)
+        {
+          res.statusCode = 400
+          res.statusMessage = `these tags are not correct ${JSON.stringify(nonExistent)}`
+        }
+        res.end()
         }
         break;
   }

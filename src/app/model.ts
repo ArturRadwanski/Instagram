@@ -5,18 +5,25 @@ interface singleChange
 }
 
 export interface PhotoData {
-    id: String,
+    id: number,
     album: String,
     originalName: String,
     url: String,
     lastChange: String,
-    history: singleChange[]
+    history: singleChange[],
+    tagList: string[]
 }
 
 export interface TagData {
     id: number,
     name: String,
     popularity:number
+}
+
+export interface UpdatePhotoTagsData {
+    photoId: number,
+    tagName: string | string[],
+
 }
 export const tagsList:TagData[] = [
     {
@@ -69,7 +76,7 @@ export let nextPhotoId =
     _id: 0,
     get id()
     {
-        return this.id
+        return this._id
     },
     set id(value:number)
     { this._id = value}

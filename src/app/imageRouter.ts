@@ -2,6 +2,7 @@ import * as formidable from "formidable";
 import { IncomingMessage, ServerResponse } from "http";
 import FileController from "./fileController";
 import { getPostData } from "./getRequestData";
+import { photoList } from "./model";
 
 export default async function imageRouter(
   req: IncomingMessage,
@@ -12,7 +13,9 @@ export default async function imageRouter(
       const [path, params] = req.url.split(/\?/);
       if (path == "/api/photos") {
         res.statusCode = 200;
-        res.setHeader("content-type", "image/jpg");
+        res.setHeader("content-type", "application/json");
+
+        res.end(JSON.stringify(photoList))
         //pobierz wszystkie
         res.end();
       } else if (req.url.match(/api\/photos\/[0-9]*/)) {
@@ -33,10 +36,10 @@ export default async function imageRouter(
             return;
           }
 
-          FileController.uploadPhoto((files.file as unknown as formidable.File).newFilename, (fields as unknown as{album: String}).album)
+          const photo = FileController.uploadPhoto((files.file as unknown as formidable.File).newFilename, (fields as unknown as{album: String}).album)
           res.statusCode = 200;
           res.setHeader("content-type", "application/json");
-          res.end(JSON.stringify({ ok: "ok" }));
+          res.end(JSON.stringify({ ok: "ok", ...photo }));
         });
       }
       break;

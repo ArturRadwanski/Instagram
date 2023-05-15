@@ -36,7 +36,7 @@ export default async function imageRouter(
             return;
           }
 
-          const photo = FileController.uploadPhoto((files.file as unknown as formidable.File).newFilename, (fields as unknown as{album: String}).album)
+          const photo = FileController.uploadPhoto((files.file as unknown as formidable.File).newFilename, (fields as unknown as{album: string}).album)
           res.statusCode = 200;
           res.setHeader("content-type", "application/json");
           res.end(JSON.stringify({ ok: "ok", ...photo }));

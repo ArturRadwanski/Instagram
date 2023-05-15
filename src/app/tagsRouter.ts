@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { url } from "inspector";
 import { getPostData } from "./getRequestData";
 import { photoList, tagsList, UpdatePhotoTagsData } from "./model";
-import { addTag } from "./tagsController";
+import { addTag, bindTag } from "./tagsController";
 
 export default async function tagRouter(
   req: IncomingMessage,
@@ -31,8 +31,26 @@ export default async function tagRouter(
       } else if (path.match(/tags\/[0-9]*/)) {
         
         const id = path.split(/\/tags\//)[1] as unknown as number;
+        const photo = photoList.find(photo => photo.id == id)
+        if(photo === undefined)
+        {
+          res.statusMessage = "I'm not ok"
+          res.statusCode = 403
+          res.end()
+          return;
+        }
+
+
         
-        const tag = tagsList.find((tag) => tag.id == id);
+        const tag = photo.tagList.map(
+          name => {
+           const tag =  tagsList.find((tag) => tag.name == name);
+           if(tag !== undefined)
+           return tag
+          }
+        )
+        
+        
 
         res.statusCode = 200;
         res.statusMessage = "ok";
@@ -45,8 +63,9 @@ export default async function tagRouter(
     case "POST":
       if (req.url.match(/^\/api\/tags$/)) {
         getPostData(req).then((body) => {
+          console.log(body)
           const obj = JSON.parse(body) as {name: string, popularity?: number}
-          obj.name = obj.name.replace(/\#/g, "")
+          obj.name = "#" + obj.name.replace(/\#/g, "")
 
           console.log(obj)
 
@@ -70,74 +89,46 @@ export default async function tagRouter(
         {
             const body:string = await getPostData(req) as string;
             const obj = JSON.parse(body) as UpdatePhotoTagsData
-            obj.tagName = (obj.tagName as string).replace(/\#/g, "")
-            const photo = photoList.find(photo => photo.id == obj.photoId)
-            if(!photo.tagList.includes(obj.tagName as string))
+            obj.tagName = "#" + (obj.tagName as string).replace(/\#/g, "")
+            const tagId = tagsList.find(tag => tag.name == obj.tagName).id 
+            if(bindTag(obj.photoId, [tagId]))
             {
-              if(tagsList.find(tag => 
-                tag.name.includes(obj.tagName as string)
-              ) === undefined)
-              {
-                console.log(obj.tagName)
-                res.statusCode = 400
-                res.statusMessage = "this tag does not exists"
-                res.end()
-              }
-              else {
-                photo.tagList.push(obj.tagName as string)
-              res.statusCode = 200
               res.statusMessage = "ok"
-              res.end()
-              }
-              
+              res.statusCode = 200
             }
             else
             {
-              res.statusCode = 400
-              res.statusMessage = "photo already has this tag"
-              res.end()
-            }            
+              res.statusMessage = "I'm not ok"
+              res.statusCode = 403
+            }
+            res.end()  
         }
-        else if(req.url.match(/api\/photos\/tags$\/mass/))
+        else if(req.url.match(/api\/photos\/tags\/mass$/))
         {
           const body:string = await getPostData(req) as string;
           const obj = JSON.parse(body) as UpdatePhotoTagsData
-          const photo = photoList.find(photo => photo.id == obj.photoId)
           
-          obj.tagName = (obj.tagName as string[]).map(name => name.replace(/\#/g, ""))
+          const tagId = (obj.tagName as string[]).map(name => {
+            const tag = tagsList.find(el => name == el.name)
+            if(tag !== undefined)
+              return tag.id;
+          });
 
-          const nonExistent:string[] = []
-
-          res.statusCode = 200
-          res.statusMessage = "ok"
-
-          obj.tagName.forEach(name => {
-            if(!photo.tagList.includes(name))
+          if(bindTag(obj.photoId, tagId))
             {
-              if(tagsList.find(tag => 
-                tag.name.includes(name)
-              ) === undefined)
-              {
-                nonExistent.push(name)
-              }
-              else {
-                photo.tagList.push(obj.tagName as string)
-              }
-              
+              res.statusMessage = "ok"
+              res.statusCode = 200
             }
             else
             {
-              nonExistent.push(name)
-            }    
-          })
-        if(nonExistent.length != 0)
-        {
-          res.statusCode = 400
-          res.statusMessage = `these tags are not correct ${JSON.stringify(nonExistent)}`
-        }
-        res.end()
-        }
+              res.statusMessage = "I'm not ok"
+              res.statusCode = 403
+            }
+            res.end()  
+          
+          
         break;
+          }
   }
   return;
 }

@@ -5,12 +5,12 @@ import { nextPhotoId, photoList } from './model';
 class FileControllerClass
 {
 
-createAlbum(name: String): void
+createAlbum(name: string): void
 {
     fs.mkdirSync(`./albums/${name}`)
 }
 
-uploadPhoto(name: String, album: String)
+uploadPhoto(name: string, album: string)
 {
     if(!fs.existsSync(`./albums/${album}`))
         this.createAlbum(album)
@@ -24,7 +24,13 @@ uploadPhoto(name: String, album: String)
         history: [],
         tagList: []
     })
+    nextPhotoId.id += 1
     return photoList[photoList.length - 1]
+}
+
+findPhotoById(id: number)
+{
+    return photoList.find(el => el.id == id)
 }
 
 }

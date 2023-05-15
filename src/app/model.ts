@@ -1,22 +1,22 @@
 interface singleChange 
 {
-    status: String,
-    lastModifiedDate: String
+    status: string,
+    lastModifiedDate: string
 }
 
 export interface PhotoData {
     id: number,
-    album: String,
-    originalName: String,
-    url: String,
-    lastChange: String,
+    album: string,
+    originalName: string,
+    url: string,
+    lastChange: string,
     history: singleChange[],
     tagList: string[]
 }
 
 export interface TagData {
     id: number,
-    name: String,
+    name: string,
     popularity:number
 }
 

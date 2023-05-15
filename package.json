@@ -6,14 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "start": "node dist/main"
+    "start": "node dist/main",
+    "watch": "webpack -w"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/sharp": "^0.32.0",
     "formidable": "^2.1.1",
     "http": "0.0.1-security",
     "path": "^0.12.7",
+    "sharp": "^0.32.1",
     "ts-loader": "^9.4.2",
     "typescript": "^5.0.2",
     "webpack": "^5.76.3",

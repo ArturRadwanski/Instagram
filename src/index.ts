@@ -1,7 +1,8 @@
 import { createServer } from "http";
-const PORT = 3000;
+import filtersRouter from "./app/filtersRouter";
 import imageRouter from "./app/imageRouter";
 import tagRouter from "./app/tagsRouter";
+require("dotenv").config()
 
 const server = createServer((req, res) => {
 
@@ -9,9 +10,11 @@ const server = createServer((req, res) => {
     tagRouter(req, res);
   else if(req.url.match(/\/api\/photos/))
     imageRouter(req, res);
+  else if(req.url.match(/api\/filters/))
+    filtersRouter(req, res)
 
 });
 
-server.listen(PORT, () => {
-  console.log("Start on " + PORT);
+server.listen(process.env.APP_PORT, () => {
+  console.log("Start on " + process.env.APP_PORT);
 });

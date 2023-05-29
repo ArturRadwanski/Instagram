@@ -25,6 +25,25 @@ export interface UpdatePhotoTagsData {
     tagName: string | string[],
 
 }
+export interface user{
+    id: number,
+    name: string,
+    lastName: string,
+    email: string,
+    confirmed: boolean,
+    password: string
+}
+export let nextUserId = {
+    _id:6,
+    get id():number
+    {
+        this._id += 1
+        return this._id
+
+    }
+}
+export const userList:user[] = []
+export const tokenBinding:{userId: number, token:string}[] = []
 export const tagsList:TagData[] = [
     {
         "id": 0,
@@ -59,26 +78,22 @@ export const tagsList:TagData[] = [
 ]
 export let nextTagId = {
     _id:6,
-    get id()
+    get id():number
     {
+        this._id += 1
         return this._id
 
     },
-    set id(value: number)
-    {
-        this._id = value
-    }
 }
 
 export const photoList:PhotoData[] = []
 export let nextPhotoId = 
 {
     _id: 0,
-    get id()
+    get id():number
     {
+        this._id += 1
         return this._id
-    },
-    set id(value:number)
-    { this._id = value}
+    }
 
 }

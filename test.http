@@ -25,10 +25,22 @@ Content-Type: multipart/form-data; boundary=----FormBoundary1234
 Content-Disposition: form-data; name="file"; filename="input.png"
 Content-Type: image/png
 
-< ./input.png
+< ./tygrysek.jpg
 
 ------FormBoundary1234
 Content-Disposition: form-data; name="album"
 
 inny
 ------FormBoundary1234
+###
+POST http://localhost:3000/api/user/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Kubuś",
+  "lastName": "Puchatek",
+  "email": "stum@gmail.com",
+  "password": "1234"
+}
+###
+GET http://localhost:3000/api/user/confirm/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0dW1AZ21haWwuY29tIiwiaWF0IjoxNjg1MzQ5OTc5LCJleHAiOjE2ODUzNTAyNzl9.6vU-GQyw3jYBYVOa_NAW4FbAl3zS88a8CK23upAiuhU HTTP/1.1

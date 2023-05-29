@@ -1,7 +1,8 @@
 import { createServer } from "http";
-import filtersRouter from "./app/filtersRouter";
-import imageRouter from "./app/imageRouter";
-import tagRouter from "./app/tagsRouter";
+import filtersRouter from "./app/router/filtersRouter";
+import imageRouter from "./app/router/imageRouter";
+import tagRouter from "./app/router/tagsRouter";
+import userRouter from "./app/router/userRouter";
 require("dotenv").config()
 
 const server = createServer((req, res) => {
@@ -12,6 +13,8 @@ const server = createServer((req, res) => {
     imageRouter(req, res);
   else if(req.url.match(/api\/filters/))
     filtersRouter(req, res)
+  else if(req.url.match(/api\/user/))
+    userRouter(req, res)
 
 });
 

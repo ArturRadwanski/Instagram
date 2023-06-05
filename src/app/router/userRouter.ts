@@ -14,7 +14,7 @@ export default async function userRouter(req:IncomingMessage, res:ServerResponse
                 if(user.name != undefined && user.lastName != undefined && user.email != undefined && user.password != undefined)
                 {
                     const token = await userController.reqisterUser(user.name, user.lastName, user.email, user.password)
-                    res.statusCode = 200
+                    res.statusCode = 201
                     res.statusMessage = "ok"
                     res.end(token)
                 }
@@ -24,15 +24,39 @@ export default async function userRouter(req:IncomingMessage, res:ServerResponse
                 
                 
             }
+            if(req.url.match(/\/login/))
+            {
+                const body = await getPostData(req);
+                const data = JSON.parse(body) as unknown as {email:string, password:string}
+                const result = await userController.login(data.email, data.password)
+                if(result)
+                {
+                    res.statusCode = 200
+                    res.statusMessage = "pomyslnie zalogowano"
+                    res.end(result)
+                }
+                else{
+                    res.statusCode = 400
+                    res.statusMessage = "err"
+                    res.end("upewnij się że hasło jest poprawne, a adres email potwierdzony")
+                }
+                    
+            }
             break;
         case "GET":
             if(req.url.match(/\/confirm\/.+$/))
             {
                 const phases = req.url.split("/")
                 const token = phases[phases.length - 1]
-                userController.confirmUser(token)
-                res.statusCode = 200
-                res.statusMessage = "ok"
+                let status = await userController.confirmUser(token)
+                if(status)
+                {
+                    res.statusCode = 200
+                    res.statusMessage = "successfully confirmed"
+                    res.end()
+                }
+                res.statusCode = 401
+                res.statusMessage = "bad token"
                 res.end()
             }
     }

@@ -2,10 +2,10 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/app/fileController.ts":
-/*!***********************************!*\
-  !*** ./src/app/fileController.ts ***!
-  \***********************************/
+/***/ "./src/app/controller/fileController.ts":
+/*!**********************************************!*\
+  !*** ./src/app/controller/fileController.ts ***!
+  \**********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -14,7 +14,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! fs */ "fs");
 /* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./model */ "./src/app/model.ts");
+/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../model */ "./src/app/model.ts");
 
 
 var FileControllerClass = /** @class */ (function () {
@@ -36,7 +36,6 @@ var FileControllerClass = /** @class */ (function () {
             history: [],
             tagList: []
         });
-        _model__WEBPACK_IMPORTED_MODULE_1__.nextPhotoId.id += 1;
         return _model__WEBPACK_IMPORTED_MODULE_1__.photoList[_model__WEBPACK_IMPORTED_MODULE_1__.photoList.length - 1];
     };
     FileControllerClass.prototype.findPhotoById = function (id) {
@@ -54,6 +53,665 @@ var FileController = new FileControllerClass();
 //     lastChange: String,
 //     history: singleChange[]
 // }
+
+
+/***/ }),
+
+/***/ "./src/app/controller/filtersController.ts":
+/*!*************************************************!*\
+  !*** ./src/app/controller/filtersController.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "crop": () => (/* binding */ crop),
+/* harmony export */   "flip": () => (/* binding */ flip),
+/* harmony export */   "flop": () => (/* binding */ flop),
+/* harmony export */   "getMetadata": () => (/* binding */ getMetadata),
+/* harmony export */   "grayScale": () => (/* binding */ grayScale),
+/* harmony export */   "negate": () => (/* binding */ negate),
+/* harmony export */   "reformat": () => (/* binding */ reformat),
+/* harmony export */   "resize": () => (/* binding */ resize),
+/* harmony export */   "rotate": () => (/* binding */ rotate),
+/* harmony export */   "tint": () => (/* binding */ tint)
+/* harmony export */ });
+/* harmony import */ var sharp__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sharp */ "sharp");
+/* harmony import */ var sharp__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sharp__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _fileController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./fileController */ "./src/app/controller/fileController.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+function getMetadata(photoId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var photo, meta, err_1;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 4, , 5]);
+                                photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
+                                if (!(photo !== undefined)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
+                                        .metadata()];
+                            case 1:
+                                meta = _a.sent();
+                                resolve(meta);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                resolve("not found");
+                                _a.label = 3;
+                            case 3: return [3 /*break*/, 5];
+                            case 4:
+                                err_1 = _a.sent();
+                                reject(err_1.message);
+                                return [3 /*break*/, 5];
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); })];
+        });
+    });
+}
+//toDo edutuj historie zdjecia zamiast tworzyc nowe dane po filtrze
+function rotate(photoId, angle) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var photo, newPhoto, err_2;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 4, , 5]);
+                                photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
+                                if (!(photo !== undefined)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
+                                        .rotate(angle)
+                                        .toFile("temp/".concat(photo.originalName, "_rotate.jpg"))];
+                            case 1:
+                                _a.sent();
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_rotate.jpg", photo.album);
+                                resolve(newPhoto.id);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                reject("not found");
+                                _a.label = 3;
+                            case 3: return [3 /*break*/, 5];
+                            case 4:
+                                err_2 = _a.sent();
+                                reject(err_2);
+                                return [3 /*break*/, 5];
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); })];
+        });
+    });
+}
+function resize(photoId, width, height) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var photo, newPhoto, err_3;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 4, , 5]);
+                                photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
+                                if (!(photo !== undefined)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
+                                        .resize(width, height)
+                                        .toFile("temp/".concat(photo.originalName, "_resize.jpg"))];
+                            case 1:
+                                _a.sent();
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_resize.jpg", photo.album);
+                                resolve(newPhoto.id);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                reject("not found");
+                                _a.label = 3;
+                            case 3: return [3 /*break*/, 5];
+                            case 4:
+                                err_3 = _a.sent();
+                                reject(err_3);
+                                return [3 /*break*/, 5];
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); })];
+        });
+    });
+}
+//toDo funkcja uploadPhoto i tak zrobi z tego jpg, napraw potem
+function reformat(photoId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var photo, newPhoto, err_4;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 4, , 5]);
+                                photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
+                                if (!(photo !== undefined)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
+                                        .toFile("temp/".concat(photo.originalName, ".png"))];
+                            case 1:
+                                _a.sent();
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + ".png", photo.album);
+                                resolve(newPhoto.id);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                reject("not found");
+                                _a.label = 3;
+                            case 3: return [3 /*break*/, 5];
+                            case 4:
+                                err_4 = _a.sent();
+                                reject(err_4);
+                                return [3 /*break*/, 5];
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); })];
+        });
+    });
+}
+function crop(photoId, region) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var photo, newPhoto, err_5;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 4, , 5]);
+                                photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
+                                if (!(photo !== undefined)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
+                                        .extract(region)
+                                        .toFile("temp/".concat(photo.originalName, "_crop.jpg"))];
+                            case 1:
+                                _a.sent();
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_crop.jpg", photo.album);
+                                resolve(newPhoto.id);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                reject("not found");
+                                _a.label = 3;
+                            case 3: return [3 /*break*/, 5];
+                            case 4:
+                                err_5 = _a.sent();
+                                reject(err_5);
+                                return [3 /*break*/, 5];
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); })];
+        });
+    });
+}
+function grayScale(photoId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var photo, newPhoto, err_6;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 4, , 5]);
+                                photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
+                                if (!(photo !== undefined)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
+                                        .grayscale()
+                                        .toFile("temp/".concat(photo.originalName, "_grayScale.jpg"))];
+                            case 1:
+                                _a.sent();
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_grayScale.jpg", photo.album);
+                                resolve(newPhoto.id);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                reject("not found");
+                                _a.label = 3;
+                            case 3: return [3 /*break*/, 5];
+                            case 4:
+                                err_6 = _a.sent();
+                                reject(err_6);
+                                return [3 /*break*/, 5];
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); })];
+        });
+    });
+}
+function flip(photoId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var photo, newPhoto, err_7;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 4, , 5]);
+                                photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
+                                if (!(photo !== undefined)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
+                                        .flip()
+                                        .toFile("temp/".concat(photo.originalName, "_flip.jpg"))];
+                            case 1:
+                                _a.sent();
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_flip.jpg", photo.album);
+                                resolve(newPhoto.id);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                reject("not found");
+                                _a.label = 3;
+                            case 3: return [3 /*break*/, 5];
+                            case 4:
+                                err_7 = _a.sent();
+                                reject(err_7);
+                                return [3 /*break*/, 5];
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); })];
+        });
+    });
+}
+function flop(photoId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var photo, newPhoto, err_8;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 4, , 5]);
+                                photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
+                                if (!(photo !== undefined)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
+                                        .flop()
+                                        .toFile("temp/".concat(photo.originalName, "_flop.jpg"))];
+                            case 1:
+                                _a.sent();
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_flop.jpg", photo.album);
+                                resolve(newPhoto.id);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                reject("not found");
+                                _a.label = 3;
+                            case 3: return [3 /*break*/, 5];
+                            case 4:
+                                err_8 = _a.sent();
+                                reject(err_8);
+                                return [3 /*break*/, 5];
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); })];
+        });
+    });
+}
+function negate(photoId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var photo, newPhoto, err_9;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 4, , 5]);
+                                photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
+                                if (!(photo !== undefined)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
+                                        .grayscale()
+                                        .toFile("temp/".concat(photo.originalName, "_negate.jpg"))];
+                            case 1:
+                                _a.sent();
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_negate.jpg", photo.album);
+                                resolve(newPhoto.id);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                reject("not found");
+                                _a.label = 3;
+                            case 3: return [3 /*break*/, 5];
+                            case 4:
+                                err_9 = _a.sent();
+                                reject(err_9);
+                                return [3 /*break*/, 5];
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); })];
+        });
+    });
+}
+function tint(photoId, color) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var photo, newPhoto, err_10;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 4, , 5]);
+                                photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
+                                if (!(photo !== undefined)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
+                                        .tint(color)
+                                        .toFile("temp/".concat(photo.originalName, "_tint.jpg"))];
+                            case 1:
+                                _a.sent();
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_tint.jpg", photo.album);
+                                resolve(newPhoto.id);
+                                return [3 /*break*/, 3];
+                            case 2:
+                                reject("not found");
+                                _a.label = 3;
+                            case 3: return [3 /*break*/, 5];
+                            case 4:
+                                err_10 = _a.sent();
+                                reject(err_10);
+                                return [3 /*break*/, 5];
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); })];
+        });
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/app/controller/tagsController.ts":
+/*!**********************************************!*\
+  !*** ./src/app/controller/tagsController.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "addTag": () => (/* binding */ addTag),
+/* harmony export */   "bindTag": () => (/* binding */ bindTag)
+/* harmony export */ });
+/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../model */ "./src/app/model.ts");
+
+function addTag(name, popularity) {
+    if (_model__WEBPACK_IMPORTED_MODULE_0__.tagsList.findIndex(function (tag) { return tag.name == name; }) == -1) {
+        _model__WEBPACK_IMPORTED_MODULE_0__.tagsList.push({
+            name: name,
+            popularity: popularity !== null && popularity !== void 0 ? popularity : 0,
+            id: _model__WEBPACK_IMPORTED_MODULE_0__.nextTagId.id
+        });
+        return true;
+    }
+    return false;
+}
+function bindTag(photoId, tagId) {
+    var success = true;
+    var photo = _model__WEBPACK_IMPORTED_MODULE_0__.photoList.find(function (photo) { return photo.id == photoId; });
+    tagId.forEach(function (id) {
+        var tag = _model__WEBPACK_IMPORTED_MODULE_0__.tagsList.find(function (tag) { return tag.id == id; });
+        if (tag !== undefined && !photo.tagList.includes(tag.name))
+            photo.tagList.push(tag.name);
+        else
+            success = false;
+    });
+    return success;
+}
+
+
+/***/ }),
+
+/***/ "./src/app/controller/userController.ts":
+/*!**********************************************!*\
+  !*** ./src/app/controller/userController.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../model */ "./src/app/model.ts");
+/* harmony import */ var jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jsonwebtoken */ "jsonwebtoken");
+/* harmony import */ var jsonwebtoken__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var bcryptjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bcryptjs */ "bcryptjs");
+/* harmony import */ var bcryptjs__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(bcryptjs__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _getRequestData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../getRequestData */ "./src/app/getRequestData.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+
+
+(__webpack_require__(/*! dotenv */ "dotenv").config)();
+var UserController = /** @class */ (function () {
+    function UserController() {
+    }
+    UserController.prototype.reqisterUser = function (name, lastName, email, password) {
+        return __awaiter(this, void 0, void 0, function () {
+            var encPassword, newUser, token;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, bcryptjs__WEBPACK_IMPORTED_MODULE_2___default().hash(password, 10)];
+                    case 1:
+                        encPassword = _a.sent();
+                        newUser = { name: name, lastName: lastName, email: email, password: encPassword, confirmed: false, id: _model__WEBPACK_IMPORTED_MODULE_0__.nextUserId.id };
+                        _model__WEBPACK_IMPORTED_MODULE_0__.userList.push(newUser);
+                        return [4 /*yield*/, this.createToken(newUser.email, "5m")];
+                    case 2:
+                        token = _a.sent();
+                        return [2 /*return*/, token];
+                }
+            });
+        });
+    };
+    UserController.prototype.confirmUser = function (token) {
+        return __awaiter(this, void 0, void 0, function () {
+            var turnOut_1, toConfirm, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.checkToken(token)];
+                    case 1:
+                        turnOut_1 = _b.sent();
+                        toConfirm = _model__WEBPACK_IMPORTED_MODULE_0__.userList.find(function (el) { return el.email == turnOut_1.email; });
+                        console.log(toConfirm);
+                        toConfirm.confirmed = true;
+                        return [2 /*return*/, true];
+                    case 2:
+                        _a = _b.sent();
+                        return [2 /*return*/, false];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    UserController.prototype.createToken = function (email, time) {
+        return __awaiter(this, void 0, void 0, function () {
+            var token;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__.sign({ email: email }, process.env.SECRET_KEY, // powinno być w .env
+                        {
+                            expiresIn: time // "1m", "1d", "24h"
+                        })];
+                    case 1:
+                        token = _a.sent();
+                        console.log({ token: token });
+                        return [2 /*return*/, token];
+                }
+            });
+        });
+    };
+    UserController.prototype.checkToken = function (token) {
+        return __awaiter(this, void 0, void 0, function () {
+            var decode;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__.verify(token, process.env.SECRET_KEY)];
+                    case 1:
+                        decode = _a.sent();
+                        return [2 /*return*/, decode];
+                }
+            });
+        });
+    };
+    UserController.prototype.login = function (email, password) {
+        return __awaiter(this, void 0, void 0, function () {
+            var toCheck, passCheck, userId, token;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        toCheck = _model__WEBPACK_IMPORTED_MODULE_0__.userList.find(function (el) { return el.email == email; });
+                        return [4 /*yield*/, bcryptjs__WEBPACK_IMPORTED_MODULE_2___default().compare(password, toCheck.password)];
+                    case 1:
+                        passCheck = _a.sent();
+                        console.log(passCheck, toCheck.confirmed);
+                        if (!(passCheck && toCheck.confirmed)) return [3 /*break*/, 3];
+                        userId = toCheck.id;
+                        return [4 /*yield*/, this.createToken(email, "1h")];
+                    case 2:
+                        token = _a.sent();
+                        _model__WEBPACK_IMPORTED_MODULE_0__.tokenBinding.push({ userId: userId, token: token });
+                        return [2 /*return*/, token];
+                    case 3: return [2 /*return*/, false];
+                }
+            });
+        });
+    };
+    UserController.prototype.checkLoginToken = function (token) {
+        return __awaiter(this, void 0, void 0, function () {
+            var decode;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__.verify(token, process.env.SECRET_KEY)];
+                    case 1:
+                        decode = _a.sent();
+                        return [2 /*return*/, decode];
+                }
+            });
+        });
+    };
+    UserController.prototype.verifyLogin = function (req) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                        var body, data, test;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    console.log(req.headers["content-type"]);
+                                    if (!(req.headers["content-type"] == "application/json")) return [3 /*break*/, 2];
+                                    return [4 /*yield*/, (0,_getRequestData__WEBPACK_IMPORTED_MODULE_3__.getPostData)(req)];
+                                case 1:
+                                    body = _a.sent();
+                                    data = JSON.parse(body);
+                                    try {
+                                        test = jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__.decode(data.token);
+                                        resolve(test);
+                                    }
+                                    catch (_b) {
+                                        reject("expired");
+                                    }
+                                    _a.label = 2;
+                                case 2:
+                                    resolve("ok");
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })];
+            });
+        });
+    };
+    return UserController;
+}());
+var userController = new UserController();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (userController);
 
 
 /***/ }),
@@ -128,10 +786,251 @@ function getPostData(req) {
 
 /***/ }),
 
-/***/ "./src/app/imageRouter.ts":
-/*!********************************!*\
-  !*** ./src/app/imageRouter.ts ***!
-  \********************************/
+/***/ "./src/app/model.ts":
+/*!**************************!*\
+  !*** ./src/app/model.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "nextPhotoId": () => (/* binding */ nextPhotoId),
+/* harmony export */   "nextTagId": () => (/* binding */ nextTagId),
+/* harmony export */   "nextUserId": () => (/* binding */ nextUserId),
+/* harmony export */   "photoList": () => (/* binding */ photoList),
+/* harmony export */   "tagsList": () => (/* binding */ tagsList),
+/* harmony export */   "tokenBinding": () => (/* binding */ tokenBinding),
+/* harmony export */   "userList": () => (/* binding */ userList)
+/* harmony export */ });
+var nextUserId = {
+    _id: 6,
+    get id() {
+        this._id += 1;
+        return this._id;
+    }
+};
+var userList = [];
+var tokenBinding = [];
+var tagsList = [
+    {
+        "id": 0,
+        "name": "#love",
+        "popularity": 0
+    },
+    {
+        "id": 1,
+        "name": "#instagood",
+        "popularity": 0
+    },
+    {
+        "id": 2,
+        "name": "#fashion",
+        "popularity": 0
+    },
+    {
+        "id": 3,
+        "name": "#photooftheday",
+        "popularity": 0
+    },
+    {
+        "id": 4,
+        "name": "#beautiful",
+        "popularity": 0
+    },
+    {
+        "id": 5,
+        "name": "#art",
+        "popularity": 0
+    }
+];
+var nextTagId = {
+    _id: 6,
+    get id() {
+        this._id += 1;
+        return this._id;
+    },
+};
+var photoList = [];
+var nextPhotoId = {
+    _id: 0,
+    get id() {
+        this._id += 1;
+        return this._id;
+    }
+};
+
+
+/***/ }),
+
+/***/ "./src/app/router/filtersRouter.ts":
+/*!*****************************************!*\
+  !*** ./src/app/router/filtersRouter.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ filtersRouter)
+/* harmony export */ });
+/* harmony import */ var _controller_filtersController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../controller/filtersController */ "./src/app/controller/filtersController.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+function filtersRouter(req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var temp, id, meta, temp, newID, _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    if (!(req.method === "GET")) return [3 /*break*/, 22];
+                    if (!req.url.match(/metadata\/[0-9]*$/)) return [3 /*break*/, 2];
+                    temp = req.url.split("/");
+                    id = temp[temp.length - 1];
+                    return [4 /*yield*/, (0,_controller_filtersController__WEBPACK_IMPORTED_MODULE_0__.getMetadata)(id)];
+                case 1:
+                    meta = _b.sent();
+                    res.statusCode = 200;
+                    res.statusMessage = "ok";
+                    res.write(JSON.stringify(meta));
+                    res.end();
+                    return [3 /*break*/, 21];
+                case 2:
+                    if (!req.url.match(/getfile\/[0-9]\//)) return [3 /*break*/, 21];
+                    temp = req.url.split("/");
+                    newID = void 0;
+                    _a = temp[temp.length - 1];
+                    switch (_a) {
+                        case "rotate": return [3 /*break*/, 3];
+                        case "resize": return [3 /*break*/, 5];
+                        case "reformat": return [3 /*break*/, 7];
+                        case "crop": return [3 /*break*/, 9];
+                        case "grayScale": return [3 /*break*/, 11];
+                        case "flip": return [3 /*break*/, 13];
+                        case "flop": return [3 /*break*/, 15];
+                        case "negate": return [3 /*break*/, 17];
+                        case "tint": return [3 /*break*/, 19];
+                    }
+                    return [3 /*break*/, 21];
+                case 3: return [4 /*yield*/, (0,_controller_filtersController__WEBPACK_IMPORTED_MODULE_0__.rotate)(temp[temp.length - 2], 90)];
+                case 4:
+                    newID = _b.sent();
+                    res.statusCode = 200;
+                    res.statusMessage = "ok";
+                    res.end(newID + "");
+                    return [3 /*break*/, 21];
+                case 5: return [4 /*yield*/, (0,_controller_filtersController__WEBPACK_IMPORTED_MODULE_0__.resize)(temp[temp.length - 2], 200, 200)];
+                case 6:
+                    newID = _b.sent();
+                    res.statusCode = 200;
+                    res.statusMessage = "ok";
+                    res.end(newID + "");
+                    return [3 /*break*/, 21];
+                case 7: return [4 /*yield*/, (0,_controller_filtersController__WEBPACK_IMPORTED_MODULE_0__.reformat)(temp[temp.length - 2])];
+                case 8:
+                    newID = _b.sent();
+                    res.statusCode = 200;
+                    res.statusMessage = "ok";
+                    res.end(newID + "");
+                    return [3 /*break*/, 21];
+                case 9: return [4 /*yield*/, (0,_controller_filtersController__WEBPACK_IMPORTED_MODULE_0__.crop)(temp[temp.length - 2], {
+                        width: 100,
+                        height: 100,
+                        left: 0,
+                        top: 0,
+                    })];
+                case 10:
+                    newID = _b.sent();
+                    res.statusCode = 200;
+                    res.statusMessage = "ok";
+                    res.end(newID + "");
+                    return [3 /*break*/, 21];
+                case 11: return [4 /*yield*/, (0,_controller_filtersController__WEBPACK_IMPORTED_MODULE_0__.grayScale)(temp[temp.length - 2])];
+                case 12:
+                    newID = _b.sent();
+                    res.statusCode = 200;
+                    res.statusMessage = "ok";
+                    res.end(newID + "");
+                    return [3 /*break*/, 21];
+                case 13: return [4 /*yield*/, (0,_controller_filtersController__WEBPACK_IMPORTED_MODULE_0__.flip)(temp[temp.length - 2])];
+                case 14:
+                    newID = _b.sent();
+                    res.statusCode = 200;
+                    res.statusMessage = "ok";
+                    res.end(newID + "");
+                    return [3 /*break*/, 21];
+                case 15: return [4 /*yield*/, (0,_controller_filtersController__WEBPACK_IMPORTED_MODULE_0__.flop)(temp[temp.length - 2])];
+                case 16:
+                    newID = _b.sent();
+                    res.statusCode = 200;
+                    res.statusMessage = "ok";
+                    res.end(newID + "");
+                    return [3 /*break*/, 21];
+                case 17: return [4 /*yield*/, (0,_controller_filtersController__WEBPACK_IMPORTED_MODULE_0__.negate)(temp[temp.length - 2])];
+                case 18:
+                    newID = _b.sent();
+                    res.statusCode = 200;
+                    res.statusMessage = "ok";
+                    res.end(newID + "");
+                    return [3 /*break*/, 21];
+                case 19: return [4 /*yield*/, (0,_controller_filtersController__WEBPACK_IMPORTED_MODULE_0__.tint)(temp[temp.length - 2], "red")];
+                case 20:
+                    newID = _b.sent();
+                    res.statusCode = 200;
+                    res.statusMessage = "ok";
+                    res.end(newID + "");
+                    return [3 /*break*/, 21];
+                case 21: return [3 /*break*/, 23];
+                case 22:
+                    if (req.method === "PATCH") {
+                    }
+                    _b.label = 23;
+                case 23: return [2 /*return*/];
+            }
+        });
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/app/router/imageRouter.ts":
+/*!***************************************!*\
+  !*** ./src/app/router/imageRouter.ts ***!
+  \***************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -140,9 +1039,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var formidable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! formidable */ "formidable");
 /* harmony import */ var formidable__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(formidable__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _fileController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./fileController */ "./src/app/fileController.ts");
-/* harmony import */ var _getRequestData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getRequestData */ "./src/app/getRequestData.ts");
-/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./model */ "./src/app/model.ts");
+/* harmony import */ var _controller_fileController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../controller/fileController */ "./src/app/controller/fileController.ts");
+/* harmony import */ var _getRequestData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../getRequestData */ "./src/app/getRequestData.ts");
+/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../model */ "./src/app/model.ts");
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -234,7 +1133,7 @@ function imageRouter(req, res) {
                                 res.end();
                                 return;
                             }
-                            var photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(files.file.newFilename, fields.album);
+                            var photo = _controller_fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(files.file.newFilename, fields.album);
                             res.statusCode = 200;
                             res.setHeader("content-type", "application/json");
                             res.end(JSON.stringify(__assign({ ok: "ok" }, photo)));
@@ -271,126 +1170,19 @@ function imageRouter(req, res) {
 
 /***/ }),
 
-/***/ "./src/app/model.ts":
-/*!**************************!*\
-  !*** ./src/app/model.ts ***!
-  \**************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "nextPhotoId": () => (/* binding */ nextPhotoId),
-/* harmony export */   "nextTagId": () => (/* binding */ nextTagId),
-/* harmony export */   "photoList": () => (/* binding */ photoList),
-/* harmony export */   "tagsList": () => (/* binding */ tagsList)
-/* harmony export */ });
-var tagsList = [
-    {
-        "id": 0,
-        "name": "#love",
-        "popularity": 0
-    },
-    {
-        "id": 1,
-        "name": "#instagood",
-        "popularity": 0
-    },
-    {
-        "id": 2,
-        "name": "#fashion",
-        "popularity": 0
-    },
-    {
-        "id": 3,
-        "name": "#photooftheday",
-        "popularity": 0
-    },
-    {
-        "id": 4,
-        "name": "#beautiful",
-        "popularity": 0
-    },
-    {
-        "id": 5,
-        "name": "#art",
-        "popularity": 0
-    }
-];
-var nextTagId = {
-    _id: 6,
-    get id() {
-        return this._id;
-    },
-    set id(value) {
-        this._id = value;
-    }
-};
-var photoList = [];
-var nextPhotoId = {
-    _id: 0,
-    get id() {
-        return this._id;
-    },
-    set id(value) { this._id = value; }
-};
-
-
-/***/ }),
-
-/***/ "./src/app/tagsController.ts":
-/*!***********************************!*\
-  !*** ./src/app/tagsController.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "addTag": () => (/* binding */ addTag),
-/* harmony export */   "bindTag": () => (/* binding */ bindTag)
-/* harmony export */ });
-/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model */ "./src/app/model.ts");
-
-function addTag(name, popularity) {
-    if (_model__WEBPACK_IMPORTED_MODULE_0__.tagsList.findIndex(function (tag) { return tag.name == name; }) == -1) {
-        _model__WEBPACK_IMPORTED_MODULE_0__.tagsList.push({
-            name: name,
-            popularity: popularity !== null && popularity !== void 0 ? popularity : 0,
-            id: _model__WEBPACK_IMPORTED_MODULE_0__.nextTagId.id
-        });
-        _model__WEBPACK_IMPORTED_MODULE_0__.nextTagId.id += 1;
-        return true;
-    }
-    return false;
-}
-function bindTag(photoId, tagId) {
-    var success = true;
-    var photo = _model__WEBPACK_IMPORTED_MODULE_0__.photoList.find(function (photo) { return photo.id == photoId; });
-    tagId.forEach(function (id) {
-        var tag = _model__WEBPACK_IMPORTED_MODULE_0__.tagsList.find(function (tag) { return tag.id == id; });
-        if (tag !== undefined && !photo.tagList.includes(tag.name))
-            photo.tagList.push(tag.name);
-        else
-            success = false;
-    });
-    return success;
-}
-
-
-/***/ }),
-
-/***/ "./src/app/tagsRouter.ts":
-/*!*******************************!*\
-  !*** ./src/app/tagsRouter.ts ***!
-  \*******************************/
+/***/ "./src/app/router/tagsRouter.ts":
+/*!**************************************!*\
+  !*** ./src/app/router/tagsRouter.ts ***!
+  \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ tagRouter)
 /* harmony export */ });
-/* harmony import */ var _getRequestData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getRequestData */ "./src/app/getRequestData.ts");
-/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./model */ "./src/app/model.ts");
-/* harmony import */ var _tagsController__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tagsController */ "./src/app/tagsController.ts");
+/* harmony import */ var _getRequestData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../getRequestData */ "./src/app/getRequestData.ts");
+/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../model */ "./src/app/model.ts");
+/* harmony import */ var _controller_tagsController__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../controller/tagsController */ "./src/app/controller/tagsController.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -491,7 +1283,7 @@ function tagRouter(req, res) {
                             var obj = JSON.parse(body);
                             obj.name = "#" + obj.name.replace(/\#/g, "");
                             console.log(obj);
-                            var ok = (0,_tagsController__WEBPACK_IMPORTED_MODULE_2__.addTag)(obj.name, obj.popularity);
+                            var ok = (0,_controller_tagsController__WEBPACK_IMPORTED_MODULE_2__.addTag)(obj.name, obj.popularity);
                             if (ok) {
                                 res.statusCode = 200;
                                 res.statusMessage = "ok";
@@ -513,7 +1305,7 @@ function tagRouter(req, res) {
                     obj_1 = JSON.parse(body);
                     obj_1.tagName = "#" + obj_1.tagName.replace(/\#/g, "");
                     tagId = _model__WEBPACK_IMPORTED_MODULE_1__.tagsList.find(function (tag) { return tag.name == obj_1.tagName; }).id;
-                    if ((0,_tagsController__WEBPACK_IMPORTED_MODULE_2__.bindTag)(obj_1.photoId, [tagId])) {
+                    if ((0,_controller_tagsController__WEBPACK_IMPORTED_MODULE_2__.bindTag)(obj_1.photoId, [tagId])) {
                         res.statusMessage = "ok";
                         res.statusCode = 200;
                     }
@@ -534,7 +1326,7 @@ function tagRouter(req, res) {
                         if (tag !== undefined)
                             return tag.id;
                     });
-                    if ((0,_tagsController__WEBPACK_IMPORTED_MODULE_2__.bindTag)(obj.photoId, tagId)) {
+                    if ((0,_controller_tagsController__WEBPACK_IMPORTED_MODULE_2__.bindTag)(obj.photoId, tagId)) {
                         res.statusMessage = "ok";
                         res.statusCode = 200;
                     }
@@ -550,6 +1342,154 @@ function tagRouter(req, res) {
     });
 }
 
+
+/***/ }),
+
+/***/ "./src/app/router/userRouter.ts":
+/*!**************************************!*\
+  !*** ./src/app/router/userRouter.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ userRouter)
+/* harmony export */ });
+/* harmony import */ var _controller_userController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../controller/userController */ "./src/app/controller/userController.ts");
+/* harmony import */ var _getRequestData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../getRequestData */ "./src/app/getRequestData.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+function userRouter(req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, body, user, token, body, data, result, phases, token, status_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _a = req.method;
+                    switch (_a) {
+                        case "POST": return [3 /*break*/, 1];
+                        case "GET": return [3 /*break*/, 9];
+                    }
+                    return [3 /*break*/, 11];
+                case 1:
+                    if (!req.url.match(/\/register/)) return [3 /*break*/, 5];
+                    return [4 /*yield*/, (0,_getRequestData__WEBPACK_IMPORTED_MODULE_1__.getPostData)(req)];
+                case 2:
+                    body = _b.sent();
+                    user = JSON.parse(body);
+                    console.log(user);
+                    if (!(user.name != undefined && user.lastName != undefined && user.email != undefined && user.password != undefined)) return [3 /*break*/, 4];
+                    return [4 /*yield*/, _controller_userController__WEBPACK_IMPORTED_MODULE_0__["default"].reqisterUser(user.name, user.lastName, user.email, user.password)];
+                case 3:
+                    token = _b.sent();
+                    res.statusCode = 201;
+                    res.statusMessage = "ok";
+                    res.end(token);
+                    _b.label = 4;
+                case 4:
+                    res.statusCode = 400;
+                    res.statusMessage = "im not ok";
+                    res.end();
+                    _b.label = 5;
+                case 5:
+                    if (!req.url.match(/\/login/)) return [3 /*break*/, 8];
+                    return [4 /*yield*/, (0,_getRequestData__WEBPACK_IMPORTED_MODULE_1__.getPostData)(req)];
+                case 6:
+                    body = _b.sent();
+                    data = JSON.parse(body);
+                    return [4 /*yield*/, _controller_userController__WEBPACK_IMPORTED_MODULE_0__["default"].login(data.email, data.password)];
+                case 7:
+                    result = _b.sent();
+                    if (result) {
+                        res.statusCode = 200;
+                        res.statusMessage = "pomyslnie zalogowano";
+                        res.end(result);
+                    }
+                    else {
+                        res.statusCode = 400;
+                        res.statusMessage = "err";
+                        res.end("upewnij się że hasło jest poprawne, a adres email potwierdzony");
+                    }
+                    _b.label = 8;
+                case 8: return [3 /*break*/, 11];
+                case 9:
+                    if (!req.url.match(/\/confirm\/.+$/)) return [3 /*break*/, 11];
+                    phases = req.url.split("/");
+                    token = phases[phases.length - 1];
+                    return [4 /*yield*/, _controller_userController__WEBPACK_IMPORTED_MODULE_0__["default"].confirmUser(token)];
+                case 10:
+                    status_1 = _b.sent();
+                    if (status_1) {
+                        res.statusCode = 200;
+                        res.statusMessage = "successfully confirmed";
+                        res.end();
+                    }
+                    res.statusCode = 401;
+                    res.statusMessage = "bad token";
+                    res.end();
+                    _b.label = 11;
+                case 11: return [2 /*return*/];
+            }
+        });
+    });
+}
+
+
+/***/ }),
+
+/***/ "bcryptjs":
+/*!***************************!*\
+  !*** external "bcryptjs" ***!
+  \***************************/
+/***/ ((module) => {
+
+module.exports = require("bcryptjs");
+
+/***/ }),
+
+/***/ "dotenv":
+/*!*************************!*\
+  !*** external "dotenv" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("dotenv");
 
 /***/ }),
 
@@ -570,6 +1510,26 @@ module.exports = require("formidable");
 /***/ ((module) => {
 
 module.exports = require("http");
+
+/***/ }),
+
+/***/ "jsonwebtoken":
+/*!*******************************!*\
+  !*** external "jsonwebtoken" ***!
+  \*******************************/
+/***/ ((module) => {
+
+module.exports = require("jsonwebtoken");
+
+/***/ }),
+
+/***/ "sharp":
+/*!************************!*\
+  !*** external "sharp" ***!
+  \************************/
+/***/ ((module) => {
+
+module.exports = require("sharp");
 
 /***/ }),
 
@@ -660,20 +1620,31 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var http__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! http */ "http");
 /* harmony import */ var http__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(http__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _app_imageRouter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./app/imageRouter */ "./src/app/imageRouter.ts");
-/* harmony import */ var _app_tagsRouter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app/tagsRouter */ "./src/app/tagsRouter.ts");
+/* harmony import */ var _app_controller_userController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./app/controller/userController */ "./src/app/controller/userController.ts");
+/* harmony import */ var _app_router_filtersRouter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app/router/filtersRouter */ "./src/app/router/filtersRouter.ts");
+/* harmony import */ var _app_router_imageRouter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app/router/imageRouter */ "./src/app/router/imageRouter.ts");
+/* harmony import */ var _app_router_tagsRouter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./app/router/tagsRouter */ "./src/app/router/tagsRouter.ts");
+/* harmony import */ var _app_router_userRouter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./app/router/userRouter */ "./src/app/router/userRouter.ts");
 
-var PORT = 3000;
 
 
+
+
+
+(__webpack_require__(/*! dotenv */ "dotenv").config)();
 var server = (0,http__WEBPACK_IMPORTED_MODULE_0__.createServer)(function (req, res) {
+    _app_controller_userController__WEBPACK_IMPORTED_MODULE_1__["default"].verifyLogin(req);
     if (req.url.match(/tags/))
-        (0,_app_tagsRouter__WEBPACK_IMPORTED_MODULE_2__["default"])(req, res);
+        (0,_app_router_tagsRouter__WEBPACK_IMPORTED_MODULE_4__["default"])(req, res);
     else if (req.url.match(/\/api\/photos/))
-        (0,_app_imageRouter__WEBPACK_IMPORTED_MODULE_1__["default"])(req, res);
+        (0,_app_router_imageRouter__WEBPACK_IMPORTED_MODULE_3__["default"])(req, res);
+    else if (req.url.match(/api\/filters/))
+        (0,_app_router_filtersRouter__WEBPACK_IMPORTED_MODULE_2__["default"])(req, res);
+    else if (req.url.match(/api\/user/))
+        (0,_app_router_userRouter__WEBPACK_IMPORTED_MODULE_5__["default"])(req, res);
 });
-server.listen(PORT, function () {
-    console.log("Start on " + PORT);
+server.listen(process.env.APP_PORT, function () {
+    console.log("Start on " + process.env.APP_PORT);
 });
 
 })();

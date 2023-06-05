@@ -1,4 +1,5 @@
 import { createServer } from "http";
+import userController from "./app/controller/userController";
 import filtersRouter from "./app/router/filtersRouter";
 import imageRouter from "./app/router/imageRouter";
 import tagRouter from "./app/router/tagsRouter";
@@ -7,6 +8,7 @@ require("dotenv").config()
 
 const server = createServer((req, res) => {
 
+  userController.verifyLogin(req)
   if(req.url.match(/tags/))
     tagRouter(req, res);
   else if(req.url.match(/\/api\/photos/))

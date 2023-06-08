@@ -525,7 +525,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jsonwebtoken__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var bcryptjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bcryptjs */ "bcryptjs");
 /* harmony import */ var bcryptjs__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(bcryptjs__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _getRequestData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../getRequestData */ "./src/app/getRequestData.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -565,7 +564,6 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
-
 (__webpack_require__(/*! dotenv */ "dotenv").config)();
 var UserController = /** @class */ (function () {
     function UserController() {
@@ -578,7 +576,14 @@ var UserController = /** @class */ (function () {
                     case 0: return [4 /*yield*/, bcryptjs__WEBPACK_IMPORTED_MODULE_2___default().hash(password, 10)];
                     case 1:
                         encPassword = _a.sent();
-                        newUser = { name: name, lastName: lastName, email: email, password: encPassword, confirmed: false, id: _model__WEBPACK_IMPORTED_MODULE_0__.nextUserId.id };
+                        newUser = {
+                            name: name,
+                            lastName: lastName,
+                            email: email,
+                            password: encPassword,
+                            confirmed: false,
+                            id: _model__WEBPACK_IMPORTED_MODULE_0__.nextUserId.id,
+                        };
                         _model__WEBPACK_IMPORTED_MODULE_0__.userList.push(newUser);
                         return [4 /*yield*/, this.createToken(newUser.email, "5m")];
                     case 2:
@@ -597,10 +602,10 @@ var UserController = /** @class */ (function () {
                         _b.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, this.checkToken(token)];
                     case 1:
-                        turnOut_1 = _b.sent();
+                        turnOut_1 = (_b.sent());
                         toConfirm = _model__WEBPACK_IMPORTED_MODULE_0__.userList.find(function (el) { return el.email == turnOut_1.email; });
-                        console.log(toConfirm);
                         toConfirm.confirmed = true;
+                        console.log(toConfirm);
                         return [2 /*return*/, true];
                     case 2:
                         _a = _b.sent();
@@ -617,7 +622,7 @@ var UserController = /** @class */ (function () {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__.sign({ email: email }, process.env.SECRET_KEY, // powinno być w .env
                         {
-                            expiresIn: time // "1m", "1d", "24h"
+                            expiresIn: time, // "1m", "1d", "24h"
                         })];
                     case 1:
                         token = _a.sent();
@@ -681,28 +686,26 @@ var UserController = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-                        var body, data, test;
+                        var tokenInsights, now;
                         return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    console.log(req.headers["content-type"]);
-                                    if (!(req.headers["content-type"] == "application/json")) return [3 /*break*/, 2];
-                                    return [4 /*yield*/, (0,_getRequestData__WEBPACK_IMPORTED_MODULE_3__.getPostData)(req)];
-                                case 1:
-                                    body = _a.sent();
-                                    data = JSON.parse(body);
-                                    try {
-                                        test = jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__.decode(data.token);
-                                        resolve(test);
+                            console.log(req.headers);
+                            if (req.headers.authorization) {
+                                try {
+                                    tokenInsights = jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__.decode(req.headers.authorization);
+                                    now = Math.floor(Date.now() / 1000);
+                                    if (now < tokenInsights.exp) {
+                                        resolve(tokenInsights);
                                     }
-                                    catch (_b) {
-                                        reject("expired");
+                                    else {
+                                        reject("token expired");
                                     }
-                                    _a.label = 2;
-                                case 2:
-                                    resolve("ok");
-                                    return [2 /*return*/];
+                                }
+                                catch (_b) {
+                                    reject("incorrect token");
+                                }
                             }
+                            reject("no authorization token");
+                            return [2 /*return*/];
                         });
                     }); })];
             });
@@ -807,41 +810,41 @@ var nextUserId = {
     get id() {
         this._id += 1;
         return this._id;
-    }
+    },
 };
 var userList = [];
 var tokenBinding = [];
 var tagsList = [
     {
-        "id": 0,
-        "name": "#love",
-        "popularity": 0
+        id: 0,
+        name: "#love",
+        popularity: 0,
     },
     {
-        "id": 1,
-        "name": "#instagood",
-        "popularity": 0
+        id: 1,
+        name: "#instagood",
+        popularity: 0,
     },
     {
-        "id": 2,
-        "name": "#fashion",
-        "popularity": 0
+        id: 2,
+        name: "#fashion",
+        popularity: 0,
     },
     {
-        "id": 3,
-        "name": "#photooftheday",
-        "popularity": 0
+        id: 3,
+        name: "#photooftheday",
+        popularity: 0,
     },
     {
-        "id": 4,
-        "name": "#beautiful",
-        "popularity": 0
+        id: 4,
+        name: "#beautiful",
+        popularity: 0,
     },
     {
-        "id": 5,
-        "name": "#art",
-        "popularity": 0
-    }
+        id: 5,
+        name: "#art",
+        popularity: 0,
+    },
 ];
 var nextTagId = {
     _id: 6,
@@ -856,7 +859,7 @@ var nextPhotoId = {
     get id() {
         this._id += 1;
         return this._id;
-    }
+    },
 };
 
 
@@ -1126,8 +1129,10 @@ function imageRouter(req, res) {
                 case 2:
                     if (req.url == "/api/photos") {
                         form = formidable__WEBPACK_IMPORTED_MODULE_0__({ multiples: true, uploadDir: "./temp" });
+                        console.log(form);
                         form.parse(req, function (err, fields, files) {
                             if (err) {
+                                console.log(res);
                                 res.statusCode = err.httpCode || 404;
                                 res.statusMessage = String(err);
                                 res.end();
@@ -1152,9 +1157,7 @@ function imageRouter(req, res) {
                     if (!req.url.match(/api\/photos\/[0-9]*/)) return [3 /*break*/, 6];
                     res.statusCode = 200;
                     res.setHeader("content-type", "application/json");
-                    return [4 /*yield*/, (0,_getRequestData__WEBPACK_IMPORTED_MODULE_2__.getPostData)(req)
-                        //edytuj jedno zdjecie
-                    ];
+                    return [4 /*yield*/, (0,_getRequestData__WEBPACK_IMPORTED_MODULE_2__.getPostData)(req)];
                 case 5:
                     body = _c.sent();
                     //edytuj jedno zdjecie
@@ -1633,15 +1636,30 @@ __webpack_require__.r(__webpack_exports__);
 
 (__webpack_require__(/*! dotenv */ "dotenv").config)();
 var server = (0,http__WEBPACK_IMPORTED_MODULE_0__.createServer)(function (req, res) {
-    _app_controller_userController__WEBPACK_IMPORTED_MODULE_1__["default"].verifyLogin(req);
     if (req.url.match(/tags/))
         (0,_app_router_tagsRouter__WEBPACK_IMPORTED_MODULE_4__["default"])(req, res);
     else if (req.url.match(/\/api\/photos/))
         (0,_app_router_imageRouter__WEBPACK_IMPORTED_MODULE_3__["default"])(req, res);
     else if (req.url.match(/api\/filters/))
         (0,_app_router_filtersRouter__WEBPACK_IMPORTED_MODULE_2__["default"])(req, res);
-    else if (req.url.match(/api\/user/))
-        (0,_app_router_userRouter__WEBPACK_IMPORTED_MODULE_5__["default"])(req, res);
+    _app_controller_userController__WEBPACK_IMPORTED_MODULE_1__["default"].verifyLogin(req)
+        .then(function (token) {
+        if (req.url.match(/tags/))
+            (0,_app_router_tagsRouter__WEBPACK_IMPORTED_MODULE_4__["default"])(req, res);
+        else if (req.url.match(/\/api\/photos/))
+            (0,_app_router_imageRouter__WEBPACK_IMPORTED_MODULE_3__["default"])(req, res);
+        else if (req.url.match(/api\/filters/))
+            (0,_app_router_filtersRouter__WEBPACK_IMPORTED_MODULE_2__["default"])(req, res);
+    })
+        .catch(function (reason) {
+        if ((reason = "no authorization token")) {
+            if (req.url.match(/api\/user/))
+                (0,_app_router_userRouter__WEBPACK_IMPORTED_MODULE_5__["default"])(req, res);
+        }
+        // res.statusCode = 400;
+        // res.statusMessage = "bad request";
+        // res.end(reason);
+    });
 });
 server.listen(process.env.APP_PORT, function () {
     console.log("Start on " + process.env.APP_PORT);

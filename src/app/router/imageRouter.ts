@@ -15,7 +15,7 @@ export default async function imageRouter(
         res.statusCode = 200;
         res.setHeader("content-type", "application/json");
 
-        res.end(JSON.stringify(photoList))
+        res.end(JSON.stringify(photoList));
         //pobierz wszystkie
         res.end();
       } else if (req.url.match(/api\/photos\/[0-9]*/)) {
@@ -28,15 +28,21 @@ export default async function imageRouter(
     case "POST":
       if (req.url == "/api/photos") {
         const form = formidable({ multiples: true, uploadDir: "./temp" });
+
+        console.log(form);
         form.parse(req, (err, fields, files) => {
           if (err) {
+            console.log(res);
             res.statusCode = err.httpCode || 404;
             res.statusMessage = String(err);
             res.end();
             return;
           }
 
-          const photo = FileController.uploadPhoto((files.file as unknown as formidable.File).newFilename, (fields as unknown as{album: string}).album)
+          const photo = FileController.uploadPhoto(
+            (files.file as unknown as formidable.File).newFilename,
+            (fields as unknown as { album: string }).album
+          );
           res.statusCode = 200;
           res.setHeader("content-type", "application/json");
           res.end(JSON.stringify({ ok: "ok", ...photo }));
@@ -56,7 +62,7 @@ export default async function imageRouter(
       if (req.url.match(/api\/photos\/[0-9]*/)) {
         res.statusCode = 200;
         res.setHeader("content-type", "application/json");
-        const body = await getPostData(req)
+        const body = await getPostData(req);
         //edytuj jedno zdjecie
         res.end(JSON.stringify(body));
       }

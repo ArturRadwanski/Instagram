@@ -23,7 +23,7 @@ var FileControllerClass = /** @class */ (function () {
     FileControllerClass.prototype.createAlbum = function (name) {
         fs__WEBPACK_IMPORTED_MODULE_0__.mkdirSync("./albums/".concat(name));
     };
-    FileControllerClass.prototype.uploadPhoto = function (name, album) {
+    FileControllerClass.prototype.uploadPhoto = function (name, album, userId) {
         if (!fs__WEBPACK_IMPORTED_MODULE_0__.existsSync("./albums/".concat(album)))
             this.createAlbum(album);
         fs__WEBPACK_IMPORTED_MODULE_0__.renameSync("./temp/".concat(name), "./albums/".concat(album, "/").concat(name));
@@ -34,13 +34,36 @@ var FileControllerClass = /** @class */ (function () {
             url: "./albums/".concat(album, "/").concat(name),
             lastChange: Date.now().toLocaleString(),
             history: [],
-            tagList: []
+            tagList: [],
+            userId: userId,
         });
         return _model__WEBPACK_IMPORTED_MODULE_1__.photoList[_model__WEBPACK_IMPORTED_MODULE_1__.photoList.length - 1];
     };
     FileControllerClass.prototype.findPhotoById = function (id) {
         return _model__WEBPACK_IMPORTED_MODULE_1__.photoList.find(function (el) { return el.id == id; });
     };
+    FileControllerClass.prototype.createNewPost = function (title, content, photoId, email) {
+        var user = _model__WEBPACK_IMPORTED_MODULE_1__.userList.find(function (val) { return val.email == email; });
+        var post = {
+            title: title,
+            content: content,
+            photoId: photoId,
+            id: _model__WEBPACK_IMPORTED_MODULE_1__.nextPostId.id,
+            userId: user.id,
+            email: user.email,
+        };
+        _model__WEBPACK_IMPORTED_MODULE_1__.postList.push(post);
+        return;
+    };
+    FileControllerClass.prototype.deletePost = function (id, email) {
+        var post = _model__WEBPACK_IMPORTED_MODULE_1__.postList.findIndex(function (val) { return val.id == id; });
+        if (_model__WEBPACK_IMPORTED_MODULE_1__.postList[post].email == email) {
+            var x = _model__WEBPACK_IMPORTED_MODULE_1__.postList.slice(post, post + 1)[0];
+            return x;
+        }
+        return false;
+    };
+    FileControllerClass.prototype.deletePhoto = function (id) { };
     return FileControllerClass;
 }());
 var FileController = new FileControllerClass();
@@ -129,8 +152,7 @@ function getMetadata(photoId) {
                                 _a.trys.push([0, 4, , 5]);
                                 photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
                                 if (!(photo !== undefined)) return [3 /*break*/, 2];
-                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
-                                        .metadata()];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url).metadata()];
                             case 1:
                                 meta = _a.sent();
                                 resolve(meta);
@@ -168,7 +190,7 @@ function rotate(photoId, angle) {
                                         .toFile("temp/".concat(photo.originalName, "_rotate.jpg"))];
                             case 1:
                                 _a.sent();
-                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_rotate.jpg", photo.album);
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_rotate.jpg", photo.album, photo.userId);
                                 resolve(newPhoto.id);
                                 return [3 /*break*/, 3];
                             case 2:
@@ -203,7 +225,7 @@ function resize(photoId, width, height) {
                                         .toFile("temp/".concat(photo.originalName, "_resize.jpg"))];
                             case 1:
                                 _a.sent();
-                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_resize.jpg", photo.album);
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_resize.jpg", photo.album, photo.userId);
                                 resolve(newPhoto.id);
                                 return [3 /*break*/, 3];
                             case 2:
@@ -234,11 +256,10 @@ function reformat(photoId) {
                                 _a.trys.push([0, 4, , 5]);
                                 photo = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].findPhotoById(photoId);
                                 if (!(photo !== undefined)) return [3 /*break*/, 2];
-                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url)
-                                        .toFile("temp/".concat(photo.originalName, ".png"))];
+                                return [4 /*yield*/, sharp__WEBPACK_IMPORTED_MODULE_0___default()(photo.url).toFile("temp/".concat(photo.originalName, ".png"))];
                             case 1:
                                 _a.sent();
-                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + ".png", photo.album);
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + ".png", photo.album, photo.userId);
                                 resolve(newPhoto.id);
                                 return [3 /*break*/, 3];
                             case 2:
@@ -273,7 +294,7 @@ function crop(photoId, region) {
                                         .toFile("temp/".concat(photo.originalName, "_crop.jpg"))];
                             case 1:
                                 _a.sent();
-                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_crop.jpg", photo.album);
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_crop.jpg", photo.album, photo.userId);
                                 resolve(newPhoto.id);
                                 return [3 /*break*/, 3];
                             case 2:
@@ -308,7 +329,7 @@ function grayScale(photoId) {
                                         .toFile("temp/".concat(photo.originalName, "_grayScale.jpg"))];
                             case 1:
                                 _a.sent();
-                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_grayScale.jpg", photo.album);
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_grayScale.jpg", photo.album, photo.userId);
                                 resolve(newPhoto.id);
                                 return [3 /*break*/, 3];
                             case 2:
@@ -343,7 +364,7 @@ function flip(photoId) {
                                         .toFile("temp/".concat(photo.originalName, "_flip.jpg"))];
                             case 1:
                                 _a.sent();
-                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_flip.jpg", photo.album);
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_flip.jpg", photo.album, photo.userId);
                                 resolve(newPhoto.id);
                                 return [3 /*break*/, 3];
                             case 2:
@@ -378,7 +399,7 @@ function flop(photoId) {
                                         .toFile("temp/".concat(photo.originalName, "_flop.jpg"))];
                             case 1:
                                 _a.sent();
-                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_flop.jpg", photo.album);
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_flop.jpg", photo.album, photo.userId);
                                 resolve(newPhoto.id);
                                 return [3 /*break*/, 3];
                             case 2:
@@ -413,7 +434,7 @@ function negate(photoId) {
                                         .toFile("temp/".concat(photo.originalName, "_negate.jpg"))];
                             case 1:
                                 _a.sent();
-                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_negate.jpg", photo.album);
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_negate.jpg", photo.album, photo.userId);
                                 resolve(newPhoto.id);
                                 return [3 /*break*/, 3];
                             case 2:
@@ -448,7 +469,7 @@ function tint(photoId, color) {
                                         .toFile("temp/".concat(photo.originalName, "_tint.jpg"))];
                             case 1:
                                 _a.sent();
-                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_tint.jpg", photo.album);
+                                newPhoto = _fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(photo.originalName + "_tint.jpg", photo.album, photo.userId);
                                 resolve(newPhoto.id);
                                 return [3 /*break*/, 3];
                             case 2:
@@ -583,6 +604,8 @@ var UserController = /** @class */ (function () {
                             password: encPassword,
                             confirmed: false,
                             id: _model__WEBPACK_IMPORTED_MODULE_0__.nextUserId.id,
+                            photosId: [],
+                            profilePic: null,
                         };
                         _model__WEBPACK_IMPORTED_MODULE_0__.userList.push(newUser);
                         return [4 /*yield*/, this.createToken(newUser.email, "5m")];
@@ -595,23 +618,31 @@ var UserController = /** @class */ (function () {
     };
     UserController.prototype.confirmUser = function (token) {
         return __awaiter(this, void 0, void 0, function () {
-            var turnOut_1, toConfirm, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _b.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.checkToken(token)];
-                    case 1:
-                        turnOut_1 = (_b.sent());
-                        toConfirm = _model__WEBPACK_IMPORTED_MODULE_0__.userList.find(function (el) { return el.email == turnOut_1.email; });
-                        toConfirm.confirmed = true;
-                        console.log(toConfirm);
-                        return [2 /*return*/, true];
-                    case 2:
-                        _a = _b.sent();
-                        return [2 /*return*/, false];
-                    case 3: return [2 /*return*/];
-                }
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                        var turnOut_1, toConfirm, _a;
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
+                                case 0:
+                                    _b.trys.push([0, 2, , 3]);
+                                    return [4 /*yield*/, this.checkToken(token)];
+                                case 1:
+                                    turnOut_1 = (_b.sent());
+                                    console.log(turnOut_1);
+                                    toConfirm = _model__WEBPACK_IMPORTED_MODULE_0__.userList.find(function (el) { return el.email == turnOut_1.email; });
+                                    toConfirm.confirmed = true;
+                                    console.log(toConfirm);
+                                    resolve(true);
+                                    return [3 /*break*/, 3];
+                                case 2:
+                                    _a = _b.sent();
+                                    resolve(false);
+                                    return [3 /*break*/, 3];
+                                case 3: return [2 /*return*/];
+                            }
+                        });
+                    }); })];
             });
         });
     };
@@ -686,15 +717,16 @@ var UserController = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-                        var tokenInsights, now;
+                        var tokenInsights_1, now, user;
                         return __generator(this, function (_a) {
                             console.log(req.headers);
                             if (req.headers.authorization) {
                                 try {
-                                    tokenInsights = jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__.decode(req.headers.authorization);
+                                    tokenInsights_1 = jsonwebtoken__WEBPACK_IMPORTED_MODULE_1__.decode(req.headers.authorization);
                                     now = Math.floor(Date.now() / 1000);
-                                    if (now < tokenInsights.exp) {
-                                        resolve(tokenInsights);
+                                    user = _model__WEBPACK_IMPORTED_MODULE_0__.userList.find(function (us) { return us.email == tokenInsights_1.email; });
+                                    if (now < tokenInsights_1.exp && user != undefined) {
+                                        resolve(tokenInsights_1);
                                     }
                                     else {
                                         reject("token expired");
@@ -798,9 +830,11 @@ function getPostData(req) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "nextPhotoId": () => (/* binding */ nextPhotoId),
+/* harmony export */   "nextPostId": () => (/* binding */ nextPostId),
 /* harmony export */   "nextTagId": () => (/* binding */ nextTagId),
 /* harmony export */   "nextUserId": () => (/* binding */ nextUserId),
 /* harmony export */   "photoList": () => (/* binding */ photoList),
+/* harmony export */   "postList": () => (/* binding */ postList),
 /* harmony export */   "tagsList": () => (/* binding */ tagsList),
 /* harmony export */   "tokenBinding": () => (/* binding */ tokenBinding),
 /* harmony export */   "userList": () => (/* binding */ userList)
@@ -861,6 +895,14 @@ var nextPhotoId = {
         return this._id;
     },
 };
+var nextPostId = {
+    _id: 0,
+    get id() {
+        this._id += 1;
+        return this._id;
+    },
+};
+var postList = [];
 
 
 /***/ }),
@@ -1045,6 +1087,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _controller_fileController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../controller/fileController */ "./src/app/controller/fileController.ts");
 /* harmony import */ var _getRequestData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../getRequestData */ "./src/app/getRequestData.ts");
 /* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../model */ "./src/app/model.ts");
+/* harmony import */ var _controller_userController__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../controller/userController */ "./src/app/controller/userController.ts");
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! fs */ "fs");
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_5__);
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -1096,37 +1141,67 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
+
+
 function imageRouter(req, res) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, _b, path, params, form, body;
+        var _a, _b, path, params, xd, id_1, photo, url, readStream, token_1, user, form, body, data, token, err_1, url, id, token, post, err_2, body;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
                     _a = req.method;
                     switch (_a) {
                         case "GET": return [3 /*break*/, 1];
-                        case "POST": return [3 /*break*/, 2];
-                        case "DELETE": return [3 /*break*/, 3];
-                        case "PATCH": return [3 /*break*/, 4];
+                        case "POST": return [3 /*break*/, 7];
+                        case "DELETE": return [3 /*break*/, 13];
+                        case "PATCH": return [3 /*break*/, 20];
                     }
-                    return [3 /*break*/, 7];
+                    return [3 /*break*/, 23];
                 case 1:
                     _b = req.url.split(/\?/), path = _b[0], params = _b[1];
-                    if (path == "/api/photos") {
-                        res.statusCode = 200;
-                        res.setHeader("content-type", "application/json");
-                        res.end(JSON.stringify(_model__WEBPACK_IMPORTED_MODULE_3__.photoList));
-                        //pobierz wszystkie
-                        res.end();
-                    }
-                    else if (req.url.match(/api\/photos\/[0-9]*/)) {
-                        res.statusCode = 200;
-                        res.setHeader("content-type", "image/jpg");
-                        //pobierz jedno zdjęcie
-                        res.end();
-                    }
-                    return [3 /*break*/, 7];
+                    if (!(path == "/api/photos")) return [3 /*break*/, 2];
+                    res.statusCode = 200;
+                    res.setHeader("content-type", "application/json");
+                    res.end(JSON.stringify(_model__WEBPACK_IMPORTED_MODULE_3__.photoList));
+                    //pobierz wszystkie
+                    res.end();
+                    return [3 /*break*/, 6];
                 case 2:
+                    if (!req.url.match(/api\/photos\/[0-9]+/)) return [3 /*break*/, 3];
+                    xd = req.url.split(/\//g);
+                    id_1 = parseInt(xd[xd.length - 1]);
+                    photo = _model__WEBPACK_IMPORTED_MODULE_3__.photoList.find(function (img) { return img.id == id_1; });
+                    url = __dirname + photo.url;
+                    url = url.replace(/\/\//g, "/");
+                    res.setHeader("content-type", "image/jpg");
+                    res.statusCode = 200;
+                    readStream = fs__WEBPACK_IMPORTED_MODULE_5___default().createReadStream(url);
+                    readStream.pipe(res);
+                    //pobierz jedno zdjęcie
+                    res.end();
+                    return [3 /*break*/, 6];
+                case 3:
+                    if (!req.url.match(/api\/photos\/post/)) return [3 /*break*/, 4];
+                    console.log("xd");
+                    res.statusCode = 200;
+                    res.end(JSON.stringify(_model__WEBPACK_IMPORTED_MODULE_3__.postList));
+                    return [3 /*break*/, 6];
+                case 4:
+                    if (!req.url.match(/api\/photos\/profile/)) return [3 /*break*/, 6];
+                    return [4 /*yield*/, _controller_userController__WEBPACK_IMPORTED_MODULE_4__["default"].verifyLogin(req)];
+                case 5:
+                    token_1 = _c.sent();
+                    user = _model__WEBPACK_IMPORTED_MODULE_3__.userList.find(function (us) { return us.email == token_1.email; });
+                    res.statusCode = 200;
+                    res.end(JSON.stringify({
+                        name: user.name,
+                        lastName: user.lastName,
+                        photoId: user.profilePic,
+                        email: user.email,
+                    }));
+                    _c.label = 6;
+                case 6: return [3 /*break*/, 23];
+                case 7:
                     if (req.url == "/api/photos") {
                         form = formidable__WEBPACK_IMPORTED_MODULE_0__({ multiples: true, uploadDir: "./temp" });
                         console.log(form);
@@ -1138,33 +1213,89 @@ function imageRouter(req, res) {
                                 res.end();
                                 return;
                             }
-                            var photo = _controller_fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(files.file.newFilename, fields.album);
-                            res.statusCode = 200;
-                            res.setHeader("content-type", "application/json");
-                            res.end(JSON.stringify(__assign({ ok: "ok" }, photo)));
+                            _controller_userController__WEBPACK_IMPORTED_MODULE_4__["default"].verifyLogin(req)
+                                .then(function (token) {
+                                var user = _model__WEBPACK_IMPORTED_MODULE_3__.userList.find(function (val) { return val.email == token.email; });
+                                var photo = _controller_fileController__WEBPACK_IMPORTED_MODULE_1__["default"].uploadPhoto(files.file.newFilename, fields.album, user.id);
+                                res.statusCode = 200;
+                                res.setHeader("content-type", "application/json");
+                                res.end(JSON.stringify(__assign({ ok: "ok" }, photo)));
+                            })
+                                .catch(function (err) {
+                                res.statusCode = 400;
+                                res.end(err);
+                            });
                         });
                     }
-                    return [3 /*break*/, 7];
-                case 3:
-                    if (req.url.match(/api\/photos\/[0-9a-zA-Z]*/)) {
+                    if (!req.url.match(/photos\/post/)) return [3 /*break*/, 12];
+                    return [4 /*yield*/, (0,_getRequestData__WEBPACK_IMPORTED_MODULE_2__.getPostData)(req)];
+                case 8:
+                    body = _c.sent();
+                    data = JSON.parse(body);
+                    _c.label = 9;
+                case 9:
+                    _c.trys.push([9, 11, , 12]);
+                    return [4 /*yield*/, _controller_userController__WEBPACK_IMPORTED_MODULE_4__["default"].verifyLogin(req)];
+                case 10:
+                    token = _c.sent();
+                    _controller_fileController__WEBPACK_IMPORTED_MODULE_1__["default"].createNewPost(data.title, data.content, data.photoId, token.email);
+                    res.statusCode = 201;
+                    res.statusMessage = "ok";
+                    res.end();
+                    return [3 /*break*/, 12];
+                case 11:
+                    err_1 = _c.sent();
+                    res.statusCode = 401;
+                    res.statusMessage = "invalid token";
+                    res.end(err_1);
+                    return [3 /*break*/, 12];
+                case 12: return [3 /*break*/, 23];
+                case 13:
+                    if (!req.url.match(/api\/photos\/post\/[0-9]*/)) return [3 /*break*/, 18];
+                    _c.label = 14;
+                case 14:
+                    _c.trys.push([14, 16, , 17]);
+                    url = req.url.split(/\//g);
+                    id = parseInt(url[url.length - 1]);
+                    return [4 /*yield*/, _controller_userController__WEBPACK_IMPORTED_MODULE_4__["default"].verifyLogin(req)];
+                case 15:
+                    token = _c.sent();
+                    post = _controller_fileController__WEBPACK_IMPORTED_MODULE_1__["default"].deletePost(id, token.email);
+                    if (post) {
                         res.statusCode = 200;
                         res.setHeader("content-type", "application/json");
-                        //usun zdjecie i zwroc jego json
-                        res.end();
+                        res.end(post);
                     }
-                    return [3 /*break*/, 7];
-                case 4:
-                    if (!req.url.match(/api\/photos\/[0-9]*/)) return [3 /*break*/, 6];
+                    else {
+                        res.statusCode = 403;
+                        res.statusMessage = "forbidden";
+                        res.end("You can only delete your own posts");
+                    }
+                    return [3 /*break*/, 17];
+                case 16:
+                    err_2 = _c.sent();
+                    res.statusCode = 401;
+                    res.statusMessage = "err";
+                    res.end(err_2);
+                    return [3 /*break*/, 17];
+                case 17: return [3 /*break*/, 19];
+                case 18:
+                    if (req.url.match(/photos\/[0-9]*/)) {
+                    }
+                    _c.label = 19;
+                case 19: return [3 /*break*/, 23];
+                case 20:
+                    if (!req.url.match(/api\/photos\/[0-9]*/)) return [3 /*break*/, 22];
                     res.statusCode = 200;
                     res.setHeader("content-type", "application/json");
                     return [4 /*yield*/, (0,_getRequestData__WEBPACK_IMPORTED_MODULE_2__.getPostData)(req)];
-                case 5:
+                case 21:
                     body = _c.sent();
                     //edytuj jedno zdjecie
                     res.end(JSON.stringify(body));
-                    _c.label = 6;
-                case 6: return [3 /*break*/, 7];
-                case 7: return [2 /*return*/];
+                    _c.label = 22;
+                case 22: return [3 /*break*/, 23];
+                case 23: return [2 /*return*/];
             }
         });
     });
@@ -1360,6 +1491,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _controller_userController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../controller/userController */ "./src/app/controller/userController.ts");
 /* harmony import */ var _getRequestData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../getRequestData */ "./src/app/getRequestData.ts");
+/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../model */ "./src/app/model.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1398,9 +1530,10 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 };
 
 
+
 function userRouter(req, res) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, body, user, token, body, data, result, phases, token, status_1;
+        var _a, body, user_1, test, token, body, data, result, phases, token, status_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -1415,10 +1548,14 @@ function userRouter(req, res) {
                     return [4 /*yield*/, (0,_getRequestData__WEBPACK_IMPORTED_MODULE_1__.getPostData)(req)];
                 case 2:
                     body = _b.sent();
-                    user = JSON.parse(body);
-                    console.log(user);
-                    if (!(user.name != undefined && user.lastName != undefined && user.email != undefined && user.password != undefined)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, _controller_userController__WEBPACK_IMPORTED_MODULE_0__["default"].reqisterUser(user.name, user.lastName, user.email, user.password)];
+                    user_1 = JSON.parse(body);
+                    test = _model__WEBPACK_IMPORTED_MODULE_2__.userList.find(function (val) { return val.email == user_1.email; });
+                    if (!(user_1.name != undefined &&
+                        user_1.lastName != undefined &&
+                        user_1.email != undefined &&
+                        user_1.password != undefined &&
+                        test == undefined)) return [3 /*break*/, 4];
+                    return [4 /*yield*/, _controller_userController__WEBPACK_IMPORTED_MODULE_0__["default"].reqisterUser(user_1.name, user_1.lastName, user_1.email, user_1.password)];
                 case 3:
                     token = _b.sent();
                     res.statusCode = 201;
@@ -1461,11 +1598,14 @@ function userRouter(req, res) {
                     if (status_1) {
                         res.statusCode = 200;
                         res.statusMessage = "successfully confirmed";
-                        res.end();
+                        console.log("confirm");
+                        res.end(JSON.stringify("successfully confirmed"));
                     }
-                    res.statusCode = 401;
-                    res.statusMessage = "bad token";
-                    res.end();
+                    else {
+                        res.statusCode = 401;
+                        res.statusMessage = "bad token";
+                        res.end("err");
+                    }
                     _b.label = 11;
                 case 11: return [2 /*return*/];
             }
@@ -1636,29 +1776,34 @@ __webpack_require__.r(__webpack_exports__);
 
 (__webpack_require__(/*! dotenv */ "dotenv").config)();
 var server = (0,http__WEBPACK_IMPORTED_MODULE_0__.createServer)(function (req, res) {
-    if (req.url.match(/tags/))
-        (0,_app_router_tagsRouter__WEBPACK_IMPORTED_MODULE_4__["default"])(req, res);
-    else if (req.url.match(/\/api\/photos/))
-        (0,_app_router_imageRouter__WEBPACK_IMPORTED_MODULE_3__["default"])(req, res);
-    else if (req.url.match(/api\/filters/))
-        (0,_app_router_filtersRouter__WEBPACK_IMPORTED_MODULE_2__["default"])(req, res);
-    _app_controller_userController__WEBPACK_IMPORTED_MODULE_1__["default"].verifyLogin(req)
-        .then(function (token) {
+    _app_controller_userController__WEBPACK_IMPORTED_MODULE_1__["default"].verifyLogin(req).then(function (token) {
         if (req.url.match(/tags/))
             (0,_app_router_tagsRouter__WEBPACK_IMPORTED_MODULE_4__["default"])(req, res);
         else if (req.url.match(/\/api\/photos/))
             (0,_app_router_imageRouter__WEBPACK_IMPORTED_MODULE_3__["default"])(req, res);
         else if (req.url.match(/api\/filters/))
             (0,_app_router_filtersRouter__WEBPACK_IMPORTED_MODULE_2__["default"])(req, res);
-    })
-        .catch(function (reason) {
+        else {
+            res.statusCode = 400;
+            res.statusMessage = "bad request";
+            res.end();
+        }
+    }, function (reason) {
         if ((reason = "no authorization token")) {
+            console.log(req.url);
             if (req.url.match(/api\/user/))
                 (0,_app_router_userRouter__WEBPACK_IMPORTED_MODULE_5__["default"])(req, res);
         }
-        // res.statusCode = 400;
-        // res.statusMessage = "bad request";
-        // res.end(reason);
+        else if (reason == "token expired") {
+            res.statusCode = 403;
+            res.statusMessage = "token expired";
+            res.end(JSON.stringify(""));
+        }
+        else {
+            res.statusCode = 400;
+            res.statusMessage = "bad request";
+            res.end(reason);
+        }
     });
 });
 server.listen(process.env.APP_PORT, function () {

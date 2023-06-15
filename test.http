@@ -23,7 +23,8 @@ content-type: application/json
 ###
 POST http://localhost:3000/api/photos HTTP/1.1
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0dW1AZ21haWwuY29tIiwiaWF0IjoxNjg2MDg0MjE4LCJleHAiOjE2ODYwODc4MTh9.6Fe4QyelBvN_MovZaKQ2jPyMi9Wl6EyEsrDi1Z3sbw0
-Content-Type: multipart/form-data; boundary=----FormBoundary1234
+Content-Type: multipart/form-data; boundary=----FormBoundary1234;
+
 ------FormBoundary1234
 Content-Disposition: form-data; name="file"; filename="lol.jpg"
 Content-Type: image/jpeg
@@ -46,7 +47,7 @@ Content-Type: application/json
   "password": "1234"
 }
 ###
-GET http://localhost:3000/api/user/confirm/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0dW1AZ21haWwuY29tIiwiaWF0IjoxNjg2MDg0MDgyLCJleHAiOjE2ODYwODQzODJ9.6pHQDG_1VQ_03UYBkAvQhTk4c925Q-UHieGJTwhkIfc HTTP/1.1
+GET http://localhost:3000/api/user/confirm/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFtcmMwNC4yLjEwQGdtYWlsLmNvbSIsImlhdCI6MTY4Njg0MTU4NCwiZXhwIjoxNjg2ODQxODg0fQ.1FjSJpVnyc8rZAewIQjVqM46XNh52OtdGGufw6qTXrk HTTP/1.1
 ###
 POST http://localhost:3000/api/user/login HTTP/1.1
 Content-Type: application/json

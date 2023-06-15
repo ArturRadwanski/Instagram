@@ -26,6 +26,8 @@ class UserController {
       password: encPassword,
       confirmed: false,
       id: nextUserId.id,
+      photosId: [],
+      profilePic: null,
     };
     userList.push(newUser);
     const token = await this.createToken(newUser.email, "5m");
@@ -33,20 +35,23 @@ class UserController {
   }
 
   async confirmUser(token: string) {
-    try {
-      const turnOut = (await this.checkToken(token)) as unknown as {
-        email: string;
-        iat: number;
-        exp: number;
-      };
-      const toConfirm = userList.find((el) => el.email == turnOut.email);
+    return new Promise(async (resolve, reject) => {
+      try {
+        const turnOut = (await this.checkToken(token)) as unknown as {
+          email: string;
+          iat: number;
+          exp: number;
+        };
+        console.log(turnOut);
+        const toConfirm = userList.find((el) => el.email == turnOut.email);
 
-      toConfirm.confirmed = true;
-      console.log(toConfirm);
-      return true;
-    } catch {
-      return false;
-    }
+        toConfirm.confirmed = true;
+        console.log(toConfirm);
+        resolve(true);
+      } catch {
+        resolve(false);
+      }
+    });
   }
   async createToken(email: string, time: string) {
     let token = await jwt.sign(
@@ -79,7 +84,7 @@ class UserController {
     const decode = await jwt.verify(token, process.env.SECRET_KEY);
     return decode;
   }
-  async verifyLogin(req: IncomingMessage): Promise<string | jwt.JwtPayload> {
+  async verifyLogin(req: IncomingMessage): Promise<tokenStructure> {
     return new Promise(async (resolve, reject) => {
       console.log(req.headers);
       if (req.headers.authorization) {
@@ -88,8 +93,8 @@ class UserController {
             req.headers.authorization
           ) as tokenStructure;
           const now = Math.floor(Date.now() / 1000);
-
-          if (now < tokenInsights.exp) {
+          const user = userList.find((us) => us.email == tokenInsights.email);
+          if (now < tokenInsights.exp && user != undefined) {
             resolve(tokenInsights);
           } else {
             reject("token expired");

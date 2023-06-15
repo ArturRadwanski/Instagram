@@ -1,6 +1,7 @@
 interface singleChange {
   status: string;
   lastModifiedDate: string;
+  url: string;
 }
 export interface tokenStructure {
   email: string;
@@ -16,6 +17,7 @@ export interface PhotoData {
   lastChange: string;
   history: singleChange[];
   tagList: string[];
+  userId: number;
 }
 
 export interface TagData {
@@ -35,6 +37,8 @@ export interface user {
   email: string;
   confirmed: boolean;
   password: string;
+  photosId: number[];
+  profilePic: number | null;
 }
 export let nextUserId = {
   _id: 6,
@@ -93,3 +97,20 @@ export let nextPhotoId = {
     return this._id;
   },
 };
+
+export interface post {
+  userId: number;
+  email: string;
+  title: string;
+  content: string;
+  photoId: number[];
+  id: number;
+}
+export let nextPostId = {
+  _id: 0,
+  get id(): number {
+    this._id += 1;
+    return this._id;
+  },
+};
+export const postList: post[] = [];

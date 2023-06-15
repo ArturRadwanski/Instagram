@@ -7,24 +7,32 @@ import userRouter from "./app/router/userRouter";
 require("dotenv").config();
 
 const server = createServer((req, res) => {
-  if (req.url.match(/tags/)) tagRouter(req, res);
-  else if (req.url.match(/\/api\/photos/)) imageRouter(req, res);
-  else if (req.url.match(/api\/filters/)) filtersRouter(req, res);
-  userController
-    .verifyLogin(req)
-    .then((token) => {
+  userController.verifyLogin(req).then(
+    (token) => {
       if (req.url.match(/tags/)) tagRouter(req, res);
       else if (req.url.match(/\/api\/photos/)) imageRouter(req, res);
       else if (req.url.match(/api\/filters/)) filtersRouter(req, res);
-    })
-    .catch((reason) => {
-      if ((reason = "no authorization token")) {
-        if (req.url.match(/api\/user/)) userRouter(req, res);
+      else {
+        res.statusCode = 400;
+        res.statusMessage = "bad request";
+        res.end();
       }
-      // res.statusCode = 400;
-      // res.statusMessage = "bad request";
-      // res.end(reason);
-    });
+    },
+    (reason) => {
+      if ((reason = "no authorization token")) {
+        console.log(req.url);
+        if (req.url.match(/api\/user/)) userRouter(req, res);
+      } else if (reason == "token expired") {
+        res.statusCode = 403;
+        res.statusMessage = "token expired";
+        res.end(JSON.stringify(""));
+      } else {
+        res.statusCode = 400;
+        res.statusMessage = "bad request";
+        res.end(reason);
+      }
+    }
+  );
 });
 
 server.listen(process.env.APP_PORT, () => {
